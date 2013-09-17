@@ -1,0 +1,7 @@
+extends layout
+block content
+	h1=title
+	p
+	form("method"="POST","action"="/create")
+		!= userForm
+		input("type"="submit","value"="Submit")
