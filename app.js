@@ -12,7 +12,8 @@ var express = require('express')
 ,passport = require('passport')
 ,forms = require('express-form')
 ,mongoose = require('mongoose')
-,LocalStrategy = require('passport-local').Strategy;
+,LocalStrategy = require('passport-local').Strategy
+,FacebookStrategy = require('passport-facebook').Strategy;
 // form variables
 var forms = require('forms')
 ,fields = forms.fields
@@ -75,6 +76,20 @@ passport.use(new LocalStrategy(
 		});
 	}
 ));
+//facebook strategy
+passport.use(new FacebookStrategy({
+    clientID: "176584029176982",
+    clientSecret: "e38e81e3a49aa193017141460da89c33",
+    callbackURL: "/auth/facebook/callback"
+
+  },
+  function(accessToken, refreshToken, profile, done) {
+    User.findOrCreate({'facebookData.id' : profile.id }, function(err, user) {
+      if (err) { return done(err); }
+      done(null, user);
+    });
+  }
+));
 // mongoose connect
 mongoose.connect('mongodb://localhost/express')
 ,Schema = mongoose.Schema
@@ -104,6 +119,15 @@ app.get('/login',requireAuth);
 app.post('/login', passport.authenticate('local', { successRedirect: '/home',
     failureRedirect: '/registration',
     messages: true }));
+
+// facebook routes
+app.get('/auth/facebook/callback', 
+passport.authenticate('facebook', { successRedirect: '/',
+                                    failureRedirect: '/login' }));
+
+//     /auth/facebook/callback
+app.get('/auth/facebook', passport.authenticate('facebook'));
+
 
 
 

@@ -60,6 +60,6 @@ module.exports = function(app,requireAuth,flash){
 		res.render('about',{title:'About'})
 		
 	});
-
+	
 
 }
